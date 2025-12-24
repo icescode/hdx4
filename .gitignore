@@ -1,0 +1,9 @@
+build/
+tmp/
+*.jpg
+*.png
+*.json
+*.dat
+*.wav
+*.txt
+*.jpeg
