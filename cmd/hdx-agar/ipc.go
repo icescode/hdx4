@@ -223,7 +223,38 @@ func handleConn(c net.Conn) {
 				continue
 			}
 
-			// lanjutkan logic remove (yang sudah stabil)
+			// remove dari file .hdx-socket_list
+			data, err := os.ReadFile(listPath)
+			if err != nil {
+				c.Write([]byte("ERR INTERNAL\n"))
+				continue
+			}
+
+			var newLines []string
+			for _, line := range strings.Split(string(data), "\n") {
+				line = strings.TrimSpace(line)
+				if line == "" {
+					continue
+				}
+				if line == volumes[idx].Path {
+					continue
+				}
+				newLines = append(newLines, line)
+			}
+
+			if err := os.WriteFile(
+				listPath,
+				[]byte(strings.Join(newLines, "\n")+"\n"),
+				0644,
+			); err != nil {
+				c.Write([]byte("ERR INTERNAL\n"))
+				continue
+			}
+
+			// remove dari memory
+			volumes = append(volumes[:idx], volumes[idx+1:]...)
+
+			c.Write([]byte("OK\n"))
 
 		case "ADD-VOLUME":
 			if len(parts) < 2 {
@@ -234,12 +265,19 @@ func handleConn(c net.Conn) {
 			hdxvPath := strings.TrimSpace(parts[1])
 
 			// duplikasi
+			// 1. duplikasi
 			data, _ := os.ReadFile(listPath)
+
+			duplicate := false
 			for _, line := range strings.Split(string(data), "\n") {
 				if strings.TrimSpace(line) == hdxvPath {
-					c.Write([]byte("ERR DUPLICATE\n"))
-					continue
+					duplicate = true
+					break
 				}
+			}
+			if duplicate {
+				c.Write([]byte("ERR DUPLICATE\n"))
+				continue
 			}
 
 			// magic header
