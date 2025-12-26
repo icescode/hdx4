@@ -11,8 +11,8 @@ type PlayerState struct {
 	Paused      bool
 	Loop        bool
 	VolumeDB    float64
-
-	Skip bool // <<< TAMBAHAN
+	EventSink   func(string)
+	Skip        bool // <<< TAMBAHAN
 }
 
 var (
