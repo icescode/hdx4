@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025 Hardiyanto Y -Ebiet.
+ * This software is part of the HDX (Hardix Audio) project.
+ * This code is provided "as is", without warranty of any kind.
+ */
+
 package main
 
 import (
@@ -8,6 +14,17 @@ import (
 	"io"
 	"os"
 	"strings"
+)
+
+const (
+	version_minor      = 0
+	version_major      = 1
+	developer_title    = "Developer Hardiyanto"
+	developer_subtitle = "Build 27/12/2025 Ebiet Version"
+	app_name           = "HDX-Meta"
+	general_usage      = "Usage: ./hdx-meta -hdxv <path file name .hdxv>"
+	json_dump_usage    = "Usage: ./hdx-meta -hdxv <path file name .hdxv> -jsondump"
+	art_dump_usage     = "Usage: ./hdx-meta -hdxv <path file name .hdxv> -artdump"
 )
 
 type VolumeStructure struct {
@@ -31,19 +48,24 @@ type TrackEntry struct {
 }
 
 func main() {
-	pathFlag := flag.String("path", "", "Path file .hdxv")
-	jsonDump := flag.Bool("jsondump", false, "Tampilkan dump isi JSON JSFD")
-	artDump := flag.Bool("artdump", false, "Tampilkan informasi artwork") // Args baru sesuai permintaan lo
+	// pathFlag := flag.String("path", "", "Path file .hdxv")
+	pathFlag := flag.String("hdxv", "", "full path file name of .hdxv file")
+	jsonDump := flag.Bool("jsondump", false, "dump JSON JSFD content")
+	artDump := flag.Bool("artdump", false, "view artwork")
 	flag.Parse()
 
 	if *pathFlag == "" {
-		fmt.Println("[!] Usage: ./hdx-meta -path <file.hdxv> [-jsondump] [-artdump]")
+		fmt.Printf("\n%s %d.%d\n", app_name, version_major, version_minor)
+		fmt.Printf("%s %s\n", developer_title, developer_subtitle)
+		fmt.Printf("%s\n", general_usage)
+		fmt.Printf("%s\n", json_dump_usage)
+		fmt.Printf("%s\n", art_dump_usage)
 		return
 	}
 
 	f, err := os.Open(*pathFlag)
 	if err != nil {
-		fmt.Printf("[!] Gagal buka file: %v\n", err)
+		fmt.Printf("Gagal buka file: %v\n", err)
 		return
 	}
 	defer f.Close()
@@ -70,7 +92,7 @@ func main() {
 	json.Unmarshal(jsonRawData, &vol)
 
 	// 2. Logic Cari Artwork (Tambahan Baru)
-	var artInfo string = "No Artwork"
+	var artInfo string = "Tidak Ada Artwork"
 	if *artDump {
 		artIdx := strings.LastIndex(rawStr, "ARTW")
 		if artIdx != -1 {
@@ -124,9 +146,10 @@ func main() {
 	fmt.Println(strings.Repeat("=", 75))
 
 	if *jsonDump {
-		fmt.Println("\n=== [JSFD JSON DUMP] ===")
+		fmt.Printf("\n%s versi %d.%d\n", app_name, version_major, version_minor)
+		fmt.Printf("\n%s %s\n", developer_title, developer_subtitle)
 		fmt.Println(string(jsonRawData))
-		fmt.Println("=== [END DUMP] ===\n")
+		fmt.Println("=== [END DUMP] ===")
 	}
 }
 

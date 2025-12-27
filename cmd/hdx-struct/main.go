@@ -60,6 +60,14 @@ type Job struct {
 	Index int
 }
 
+const (
+	version_minor      = 0
+	version_major      = 1
+	developer_title    = "Developer Hardiyanto"
+	developer_subtitle = "Build 27/12/2025 Ebiet Version"
+	app_name           = "HDX-Struct"
+)
+
 func main() {
 	// 1. Parsing Flags (Automation Support)
 	srcPtr := flag.String("sourcepath", "", "Source WAV Path")
@@ -82,10 +90,10 @@ func main() {
 	}
 
 	// 3. Scan Files
-	fmt.Printf("\n[1/3] Scanning WAV files in %s...\n", finalSrcPath)
+	fmt.Printf("\n[1/3] Scanning file wav di %s...\n", finalSrcPath)
 	wavFiles := findWavs(finalSrcPath)
 	if len(wavFiles) == 0 {
-		fmt.Println("[ERROR] No WAV files found!")
+		fmt.Println("[ERROR] Tidak ditemukan wav file!")
 		return
 	}
 	sort.Strings(wavFiles)
@@ -120,7 +128,7 @@ func main() {
 	// 5. Finalize
 	outputJSON, _ := json.MarshalIndent(config, "", "  ")
 	os.WriteFile(finalJsonPath, outputJSON, 0644)
-	fmt.Printf("\n[3/3] Success! Processed %d tracks.\nJSON: %s\n", len(wavFiles), finalJsonPath)
+	fmt.Printf("\n[3/3] Sukses Prosesing  %d tracks.\nJSON: %s\n", len(wavFiles), finalJsonPath)
 }
 
 // --- High Speed Core ---
@@ -140,7 +148,7 @@ func worker(wg *sync.WaitGroup, jobs <-chan Job, results chan<- TrackEntry, defa
 			ISRC:        fmt.Sprintf("ID-HDX-%s", strings.ToUpper(fg[:10])),
 			Wave:        wave, RMS: rms, Fingerprint: fg, OriginFile: j.Path,
 		}
-		fmt.Printf(" [+] Done: %s\n", filepath.Base(j.Path))
+		fmt.Printf(" [+] Selesai: %s\n", filepath.Base(j.Path))
 	}
 }
 
@@ -172,7 +180,7 @@ func fastProcessWav(path string) ([]int, []float64, string, error) {
 	const points = 200
 	dataStart := int64(44)
 	if size <= dataStart {
-		return nil, nil, fg, fmt.Errorf("file too small")
+		return nil, nil, fg, fmt.Errorf("[ERROR] : file too small")
 	}
 
 	step := (size - dataStart) / points
@@ -209,7 +217,11 @@ func runInterview() (VolumeStructure, int, string, string) {
 	defer rl.Close()
 
 	for {
-		fmt.Println("\n=== HDX-STRUCT: INTERACTIVE MODE ===")
+		fmt.Printf("\n%s version %d.%d\n", app_name, version_major, version_minor)
+		fmt.Printf("%s\n", developer_title)
+		fmt.Printf("%s\n", developer_subtitle)
+		fmt.Printf("%s Interaktif Mode\n", app_name)
+
 		album := ask(rl, "1. Album Name", sess.Album)
 		artist := ask(rl, "2. Artist Name", sess.Artist)
 		pub := ask(rl, "3. Publisher", sess.Publisher)
@@ -217,7 +229,7 @@ func runInterview() (VolumeStructure, int, string, string) {
 		genre := ask(rl, "5. Genre", sess.Genre)
 		date := ask(rl, "6. Release Date", sess.Date)
 
-		fmt.Println("(Tip: Use TAB to autocomplete paths)")
+		fmt.Println("(Tip: Gunakan TAB untuk autocomplete paths)")
 		artPath := askValidFile(rl, "7. Artwork Path", "")
 		srcPath := askValidDir(rl, "8. Source WAV Path", "")
 		jsonPath := ask(rl, "9. JSON Output Path", filepath.Join(srcPath, "struct.json"))
@@ -264,7 +276,7 @@ func askValidFile(rl *readline.Instance, label, defaultVal string) string {
 		if s, err := os.Stat(p); err == nil && !s.IsDir() {
 			return p
 		}
-		fmt.Println(" [!] Path is not a valid file.")
+		fmt.Println(" [ERROR] Path is not a valid file.")
 	}
 }
 
@@ -274,7 +286,7 @@ func askValidDir(rl *readline.Instance, label, defaultVal string) string {
 		if s, err := os.Stat(p); err == nil && s.IsDir() {
 			return p
 		}
-		fmt.Println(" [!] Path is not a valid directory.")
+		fmt.Println(" [ERROR] Path is not a valid directory.")
 	}
 }
 

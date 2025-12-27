@@ -44,6 +44,14 @@ type TrackEntry struct {
 	Fingerprint string  `json:"fingerprint"`
 }
 
+const (
+	version_minor      = 0
+	version_major      = 1
+	developer_title    = "Developer Hardiyanto"
+	developer_subtitle = "Build 27/12/2025 Ebiet Version"
+	app_name           = "HDX-Volmaker"
+)
+
 func main() {
 	jsonPath, destFolder, password, _ := runVolmakerInterview()
 
@@ -186,9 +194,11 @@ func runVolmakerInterview() (string, string, string, int) {
 	rl, _ := readline.NewEx(&readline.Config{Prompt: ">> "})
 	defer rl.Close()
 
-	fmt.Println("\n=== HDX-VOLMAKER: JSFD GOKIL EDITION ===")
-	j := ask(rl, "1. JSON Struct Path", "struct.json")
-	d := ask(rl, "2. Dest Folder", ".")
+	fmt.Printf("\n%s version %d.%d\n", app_name, version_major, version_minor)
+	fmt.Printf("%s\n", developer_title)
+	fmt.Printf("%s\n", developer_subtitle)
+	j := ask(rl, "1. JSON Struct Path", "your-struct.json")
+	d := ask(rl, "2. Destination Folder (must exist)", ".")
 	p := ask(rl, "3. Password Master", "hardix2025")
 	w, _ := strconv.Atoi(ask(rl, "4. Worker Threads", "2"))
 
