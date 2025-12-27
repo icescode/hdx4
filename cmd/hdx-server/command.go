@@ -82,4 +82,5 @@ func cmdNext() {
 	stateMu.Lock()
 	state.Skip = true
 	stateMu.Unlock()
+	emitEvent("STATUS")
 }

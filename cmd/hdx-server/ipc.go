@@ -145,7 +145,7 @@ func handleConn(c net.Conn) {
 			continue
 
 		case "PING":
-			c.Write([]byte("Pong\n"))
+			c.Write([]byte("OK\n"))
 			continue
 
 		case "WHOAMI":
@@ -337,7 +337,7 @@ func handleConn(c net.Conn) {
 			fc.Close()
 
 			loadVolumes()
-			c.Write([]byte("Volume Loaded\n"))
+			c.Write([]byte("OK\n"))
 
 		case "PLAY-VOLUME":
 			if len(parts) != 2 {
@@ -360,7 +360,7 @@ func handleConn(c net.Conn) {
 			}
 
 			cmdPlayVolume(v, false)
-			c.Write([]byte("Volume Playing\n"))
+			c.Write([]byte("OK\n"))
 
 		case "PLAY-TRACK":
 			if len(parts) != 2 {
@@ -391,23 +391,23 @@ func handleConn(c net.Conn) {
 			}
 
 			cmdPlayTrack(v, t)
-			c.Write([]byte("Track Playing\n"))
+			c.Write([]byte("OK\n"))
 
 		case "STOP":
 			cmdStop()
-			c.Write([]byte("Stopped\n"))
+			c.Write([]byte("OK\n"))
 
 		case "NEXT":
 			cmdNext()
-			c.Write([]byte("Jump\n"))
+			c.Write([]byte("OK\n"))
 
 		case "PAUSE":
 			cmdPause()
-			c.Write([]byte("Paused\n"))
+			c.Write([]byte("OK\n"))
 
 		case "RESUME":
 			cmdResume()
-			c.Write([]byte("Resume Playing\n"))
+			c.Write([]byte("OK\n"))
 
 		default:
 			c.Write([]byte("ERR UNKNOWN\n"))
